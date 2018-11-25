@@ -224,14 +224,13 @@ int main(int argc, char *argv[])
   Eigen::MatrixXi F;
   FILE *ff=fopen("../index1.txt","r");
   char x[60];
-  std::string fi="";
+  std::string fi="",fl="";
   for (int j=0; j<10000; j++){
   	printf("stl %u\n",j);
-  	fi="";
   	fscanf(ff,"%s",&x);
   	printf("%s\n",x);
-  	fi=x;
-  	fi="../../Thingi10K/raw_meshes"+fi; 
+  	fl=x;
+  	fi="../../Thingi10K/raw_meshes"+fl; 
   	if (j>=3000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
@@ -249,9 +248,9 @@ int main(int argc, char *argv[])
   fill(X,Y,Z,voxel);
   stop=time(NULL);
   printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
-  std::string fo="D:/university/ss/proj/Thingi10K/voxelization2_3/";
-  fo=fo+fi.substr(43);
-  fo=fo.substr(0,fo.size()-3)+"out";
+  std::string fo="../../Thingi10K/voxelization3_4/";
+  fo=fo+fl.substr(0,fl.size()-3);
+  fo=fo+"out";
   FILE *f=fopen(fo.c_str(),"w");
   fprintf(f,"%d %d %d\n",X,Y,Z);
   for (int i=0; i<X*Y*Z; i++)
