@@ -8,8 +8,9 @@
 #include "math.h" 
 #include <list>
 #include <vector>
-#include <igl/octree.h>
-#include <igl/fast_winding_number.h>
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
 
 extern const int maxn=100;
 extern int cnt=0;
@@ -33,7 +34,7 @@ void scale(const Eigen::MatrixXd &V,
 	igl::mat_max(V,1,max_cord,Eigen::RowVectorXd());
 	min_cord-=Eigen::RowVector3d(1,1,1);
 	double mx=max(max_cord(0)-min_cord(0),max_cord(1)-min_cord(1),max_cord(2)-min_cord(2));
-	if (mx/(maxn-1)>resolution) resolution=mx/(maxn-1);
+	resolution=mx/(maxn-1);
 	X=floor((max_cord(0)-min_cord(0))/resolution)+1;
 	Y=floor((max_cord(1)-min_cord(1))/resolution)+1;
 	Z=floor((max_cord(2)-min_cord(2))/resolution)+1;
@@ -86,31 +87,6 @@ void flood_fill_bnd(const Eigen::MatrixXd &V,
 				const int Y,
 				const int Z,
 				std::vector<int> &voxel){
-
-	Eigen::MatrixXd P(F.rows(),3),N(F.rows(),3);
-	Eigen::VectorXd A(F.rows());
-	igl::doublearea(V,F,A);
-	A=A/2;
-  system("pause");
-	Eigen::RowVector3d vec1,vec2;
-	for (int i=0; i<F.rows(); i++){
-		P.row(i)=(V.row(F(i,0))+V.row(F(i,1)),V.row(F(i,2)))/3;
-		vec1=V.row(F(i,1))-V.row(F(i,0));
-		vec2=V.row(F(i,2))-V.row(F(i,0));
-		vec1=vec1.cross(vec2);
-		N.row(i)=vec1.normalized();
-	}
-  system("pause");
-	std::vector<std::vector<int> > point_indices;
-	Eigen::MatrixXi CH;
-	Eigen::MatrixXd CN,CM,EC;
-	Eigen::VectorXd WI,R;
-	igl::octree(P,point_indices,CH,CN,WI);
-	printf("ready\n");
-  system("pause");
-	igl::fast_winding_number(P,N,A,point_indices,CH,2,CM,R,EC);
-	printf("ready\n");
-	
 	Eigen::MatrixXi trans(6,3),trans1(8,3);
 	trans << -1,0,0,
          1,0,0,
@@ -126,7 +102,7 @@ void flood_fill_bnd(const Eigen::MatrixXd &V,
           1,0,1,
           1,1,0,
           1,1,1;
-    
+    cnt=0;
 	std::list<Eigen::RowVector3i> lst;
     double w;
     Eigen::RowVector3i now=Eigen::RowVector3i(0,0,0),now1;
@@ -154,7 +130,6 @@ void flood_fill_bnd(const Eigen::MatrixXd &V,
 	}
 	Eigen::VectorXd W;
 	igl::winding_number(V,F,O,W);
-	//igl::fast_winding_number(P,N,A,point_indices,CH,CM,R,EC,O,2,W);
 	int _o=0;
 	for (int i=0; i<o; i++){
 		now=O1.row(i);
@@ -169,7 +144,6 @@ void flood_fill_bnd(const Eigen::MatrixXd &V,
 	}
 	bool flag;
 	std::list<Eigen::RowVector3i> _lst,n1;
-		printf("xex\n");
 	o=_o;
     while (o>0){
     	_o=0;
@@ -185,6 +159,7 @@ void flood_fill_bnd(const Eigen::MatrixXd &V,
 				if (check(now,X,Y,Z)&&voxel[now(0)*Y*Z+now(1)*Z+now(2)]==-1){
 					_lst.push_back(now);
 					n1.push_back(now1);
+					cnt++;
 					voxel[now(0)*Y*Z+now(1)*Z+now(2)]=2;
 					_o++;
 				}
@@ -193,13 +168,11 @@ void flood_fill_bnd(const Eigen::MatrixXd &V,
 		}
 		Eigen::MatrixXd O(_o,3);
 		int i=0;
-		printf("yey\n");
 		for (Eigen::RowVector3i vec:_lst){
 			O.row(i)=min_cord+resolution*Eigen::RowVector3d(vec(0),vec(1),vec(2));
 			i++;
 		}
 		igl::winding_number(V,F,O,W);
-		//igl::fast_winding_number(P,N,A,point_indices,CH,CM,R,EC,O,2,W);
 		o=0;
 		//lst.clear();
 		Eigen::RowVector3i _now;
@@ -247,33 +220,47 @@ void fill(const int X,
 
 int main(int argc, char *argv[])
 {
+  //std::string fi="D:/university/ss/proj/Thingi10K/raw_meshes/100026.stl";
   Eigen::MatrixXd V,N;
   Eigen::MatrixXi F;
-  igl::readSTL(
-    (argc>1?argv[1]:"../../data/289692.stl"),V,F,N);
-  // Plot the mesh
-  igl::opengl::glfw::Viewer viewer;
-  //viewer.data().set_mesh(V, F.row(0));
-  //viewer.data().set_face_based(true);
-  //viewer.launch();
-  
+  FILE *ff=fopen("../index1.txt","r");
+  char x[60];
+  std::string fi="";
+  for (int j=0; j<10000; j++){
+  	printf("stl %u\n",j);
+  	fi="";
+  	fscanf(ff,"%s",&x);
+  	printf("%s\n",x);
+  	fi=x;
+  	fi="../../Thingi10K/raw_meshes"+fi; 
+  	if (j>=3000){
+  igl::readSTL(fi,V,F,N);
+  if (F.rows()<5000&&V.rows()<10000{
   double resolution=2;
   Eigen::RowVectorXd min_cord;
   int X,Y,Z;
   double start=time(NULL),stop;
   printf("%u %u\n",V.rows(),F.rows());
   scale(V,F,resolution,min_cord,X,Y,Z);
-  stop=time(NULL);
-  printf("%f\n",(double)difftime(stop,start));
   
   std::vector<int> voxel(X*Y*Z,-1);
   flood_fill_bnd(V,F,resolution,min_cord,X,Y,Z,voxel);
   stop=time(NULL);
-  printf("%f %u\n",(double)difftime(stop,start),cnt);
+  printf("step1 %f %u\n",(double)difftime(stop,start),cnt);
   fill(X,Y,Z,voxel);
   stop=time(NULL);
-  printf("%f %u\n",(double)difftime(stop,start),X*Y*Z);
-  int t=0,tt=0;
+  printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
+  std::string fo="D:/university/ss/proj/Thingi10K/voxelization2_3/";
+  fo=fo+fi.substr(43);
+  fo=fo.substr(0,fo.size()-3)+"out";
+  FILE *f=fopen(fo.c_str(),"w");
+  fprintf(f,"%d %d %d\n",X,Y,Z);
+  for (int i=0; i<X*Y*Z; i++)
+  	fprintf(f,"%d",voxel[i]);
+  fclose(f);
+  	fprintf(fff,"%d ",j);
+}}
+  /*igl::opengl::glfw::Viewer viewer;int t=0,tt=0;
   for (int i=0; i<X; i++)
   	for (int j=0; j<Y; j++)
   	  for (int k=0; k<Z; k++){
@@ -301,5 +288,7 @@ int main(int argc, char *argv[])
   viewer.data().set_mesh(VV, FF);
   viewer.data().set_face_based(true);
   viewer.launch();
-  system("pause");
+  system("pause");*/
+  }
+fclose(ff);
 }
