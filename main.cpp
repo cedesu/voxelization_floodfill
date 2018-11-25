@@ -32,9 +32,9 @@ void scale(const Eigen::MatrixXd &V,
 		   int &X,
 		   int &Y,
 		   int &Z){
-	Eigen::RowVectorXd max_cord;
-	igl::mat_min(V,1,min_cord,Eigen::RowVectorXd());
-	igl::mat_max(V,1,max_cord,Eigen::RowVectorXd());
+	Eigen::RowVectorXd max_cord,a;
+	igl::mat_min(V,1,min_cord,a);
+	igl::mat_max(V,1,max_cord,a);
 	min_cord-=Eigen::RowVector3d(1,1,1);
 	double mx=max(max_cord(0)-min_cord(0),max_cord(1)-min_cord(1),max_cord(2)-min_cord(2));
 	resolution=mx/(maxn-1);
