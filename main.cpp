@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
   	fi="../../Thingi10K/raw_meshes"+fi; 
   	if (j>=3000){
   igl::readSTL(fi,V,F,N);
-  if (F.rows()<5000&&V.rows()<10000{
+  if (F.rows()<5000&&V.rows()<10000){
   double resolution=2;
   Eigen::RowVectorXd min_cord;
   int X,Y,Z;
