@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
   	fscanf(ff,"%s",&x);
   	printf("%s\n",x);
   	fl=x;
-  	fi="../../Thingi10K/raw_meshes"+fl; 
+  	fi="../../Thingi10K/raw_meshes/"+fl; 
   	if (j>=3000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
