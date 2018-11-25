@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=3000){
+  	if (j>=4000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
   double resolution=2;
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
   fill(X,Y,Z,voxel);
   stop=time(NULL);
   printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
-  std::string fo="../../Thingi10K/voxelization3_4/";
+  std::string fo="../../Thingi10K/voxelization4_5/";
   fo=fo+fl.substr(0,fl.size()-3);
   fo=fo+"out";
   FILE *f=fopen(fo.c_str(),"w");
