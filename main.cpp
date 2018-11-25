@@ -1,4 +1,3 @@
-#include <igl/opengl/glfw/Viewer.h>
 #include <igl/readSTL.h>
 #include <igl/winding_number.h>
 #include <fstream>
@@ -258,7 +257,6 @@ int main(int argc, char *argv[])
   for (int i=0; i<X*Y*Z; i++)
   	fprintf(f,"%d",voxel[i]);
   fclose(f);
-  	fprintf(fff,"%d ",j);
 }}
   /*igl::opengl::glfw::Viewer viewer;int t=0,tt=0;
   for (int i=0; i<X; i++)
