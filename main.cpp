@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=1002&&j<2000){
+  	if (j>=3000&&j<4000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
   	
@@ -110,7 +110,7 @@ double max_distance = 1;
     signed_distance_pseudonormal(O,V,F,tree,FN,VN,EN,EMAP,W,I,C,N);
   stop=time(NULL);
   printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
-  std::string fo="../../Thingi10K/sdf1_2/";
+  std::string fo="../../Thingi10K/sdf3_4/";
   fo=fo+fl.substr(0,fl.size()-3);
   fo=fo.substr(0,fo.size()-3)+"out";
   FILE *f=fopen(fo.c_str(),"w");
