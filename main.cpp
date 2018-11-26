@@ -54,10 +54,11 @@ int main(int argc, char *argv[])
   for (int j=0; j<10000; j++){
   	printf("stl %u\n",j);
   	fscanf(ff,"%s",&x);
+	if (x=="") break;
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=5000&&j<6000){
+  	if (j>=6000&&j<10000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
   	
