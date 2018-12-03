@@ -25,6 +25,11 @@ double max(double a,double b,double c){
 	return ret;
 }
 
+bool check(const Eigen::RowVector3i now, const int X, const int Y,const int Z){
+	if (now(0)<0||now(0)==X||now(1)<0||now(1)==Y||now(2)<0||now(2)==Z) return false;
+	else return true;
+}
+
 void scale(const Eigen::MatrixXd &V,
            const Eigen::MatrixXi &F,
 		   double &resolution,
