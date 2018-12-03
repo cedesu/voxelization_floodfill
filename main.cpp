@@ -35,7 +35,8 @@ void scale(const Eigen::MatrixXd &V,
 	Eigen::RowVectorXd max_cord,a;
 	igl::mat_min(V,1,min_cord,a);
 	igl::mat_max(V,1,max_cord,a);
-	min_cord-=Eigen::RowVector3d(1,1,1);
+	min_cord-=Eigen::RowVector3d(0.9,0.9,0.9);
+	max_cord+=Eigen::RowVector3d(0.9,0.9,0.9);
 	double mx=max(max_cord(0)-min_cord(0),max_cord(1)-min_cord(1),max_cord(2)-min_cord(2));
 	resolution=mx/(maxn-1);
 	X=floor((max_cord(0)-min_cord(0))/resolution)+1;
@@ -43,6 +44,31 @@ void scale(const Eigen::MatrixXd &V,
 	Z=floor((max_cord(2)-min_cord(2))/resolution)+1;
 }
 
+void fill(std::vector<double> &voxel, std::list<Eigen::RowVector3i> &list){
+Eigen::MatrixXi trans(6,3);
+	trans << -1,0,0,
+         1,0,0,
+         0,-1,0,
+         0,1,0,
+         0,0,-1,
+         0,0,1;
+    Eigen::RowVector3i now,now1;
+    printf("%u\n",list.size());
+    while (!list.empty()){
+    	now=list.front();
+    	list.pop_front();
+    	for (int i=0; i<6; i++){
+    		now1=now+trans.row(i);
+    		if (check(now1,maxn,maxn,maxn)&&voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]==-1){
+    			if (voxel[now(0)*maxn*maxn+now(1)*maxn+now(2)]<0)
+    			  voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=0;
+    			else
+    			  voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=sqrt(voxel[now(0)*maxn*maxn+now(1)*maxn+now(2)]*voxel[now(0)*maxn*maxn+now(1)*maxn+now(2)]+1);
+    			list.push_back(now1);
+			}
+		}
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -58,7 +84,7 @@ int main(int argc, char *argv[])
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=2005&&j<2500){
+  	if (j>=0&&j<3000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
   	
@@ -101,27 +127,38 @@ double max_distance = 1;
   printf("%f\n",(double)difftime(stop,start));
   
   int t=0,tt=0;
-  Eigen::MatrixXd O(maxn*maxn*maxn,3);
-  Eigen::VectorXd W(maxn*maxn*maxn);
-  Eigen::RowVectorXd min_cord1=min_cord;
-  min_cord1(0)-=resolution*((maxn-X)/2);
-  min_cord1(1)-=resolution*((maxn-Y)/2);
-  min_cord1(2)-=resolution*((maxn-Z)/2);
-  for (int i=0; i<maxn; i++)
-    for (int j=0; j<maxn; j++)
-      for (int k=0; k<maxn; k++){
-      	O.row(i*Y*Z+j*Z+k)=min_cord1+resolution*Eigen::RowVector3d(i,j,k);
+  Eigen::MatrixXd O(X*Y*Z,3);
+  Eigen::VectorXd W(X*Y*Z);
+  for (int i=0; i<X; i++)
+    for (int j=0; j<Y; j++)
+      for (int k=0; k<Z; k++){
+      	O.row(i*Y*Z+j*Z+k)=min_cord+resolution*Eigen::RowVector3d(i,j,k);
 	  }
     signed_distance_pseudonormal(O,V,F,tree,FN,VN,EN,EMAP,W,I,C,N);
+  std::vector<double> voxel(maxn*maxn*maxn,-1);
+  std::list<Eigen::RowVector3i> list;
+  int i1,j1,z1;
+  for (int i=0; i<X; i++){
+    for (int j=0; j<Y; j++){
+	  for (int k=0; k<Z; k++)if (W(i*Y*Z+j*Z+k)<0){
+	  	i1=i+(maxn-X)/2;
+	  	j1=j+(maxn-Y)/2;
+	  	z1=k+(maxn-Z)/2;
+	    voxel[i1*maxn*maxn+j1*maxn+z1]=W(i*Y*Z+j*Z+k)/resolution;
+	    list.push_back(Eigen::RowVector3i(i1,j1,z1));
+	  }
+	}
+  }
+  fill(voxel,list);
   stop=time(NULL);
   printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
-  std::string fo="../../Thingi10K/sdf_scaled/";
+  std::string fo="../../Thingi10K/sdf_new/";
   fo=fo+fl.substr(0,fl.size()-3);
   fo=fo.substr(0,fo.size()-3)+"out";
   FILE *f=fopen(fo.c_str(),"w");
   //fprintf(f,"%d %d %d\n",X,Y,Z);
-  for (int i=0; i<X*Y*Z; i++)
-  	fprintf(f,"%f ",W(i)/resolution);
+  for (int i=0; i<maxn*maxn*maxn; i++)
+  	fprintf(f,"%f ",voxel[i]);
   fclose(f);
 }}}
 
