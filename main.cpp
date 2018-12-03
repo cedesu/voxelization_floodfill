@@ -121,7 +121,7 @@ double max_distance = 1;
   FILE *f=fopen(fo.c_str(),"w");
   //fprintf(f,"%d %d %d\n",X,Y,Z);
   for (int i=0; i<X*Y*Z; i++)
-  	fprintf(f,"%f ",W(i));
+  	fprintf(f,"%f ",W(i)/resolution);
   fclose(f);
 }}}
 
