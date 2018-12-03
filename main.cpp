@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=0&&j<1000){
+  	if (j>=0&&j<3000){
   igl::readSTL(fi,V,F,N);
   if (F.rows()<5000&&V.rows()<10000){
   	
@@ -101,21 +101,25 @@ double max_distance = 1;
   printf("%f\n",(double)difftime(stop,start));
   
   int t=0,tt=0;
-  Eigen::MatrixXd O(X*Y*Z,3);
-  Eigen::VectorXd W(X*Y*Z);
-  for (int i=0; i<X; i++)
-    for (int j=0; j<Y; j++)
-      for (int k=0; k<Z; k++){
-      	O.row(i*Y*Z+j*Z+k)=min_cord+resolution*Eigen::RowVector3d(i,j,k);
+  Eigen::MatrixXd O(maxn*maxn*maxn,3);
+  Eigen::VectorXd W(maxn*maxn*maxn);
+  Eigen::RowVectorXd min_cord1=min_cord;
+  min_cord1(0)-=resolution*((maxn-X)/2);
+  min_cord1(1)-=resolution*((maxn-Y)/2);
+  min_cord1(2)-=resolution*((maxn-Z)/2);
+  for (int i=0; i<maxn; i++)
+    for (int j=0; j<maxn; j++)
+      for (int k=0; k<maxn; k++){
+      	O.row(i*Y*Z+j*Z+k)=min_cord1+resolution*Eigen::RowVector3d(i,j,k);
 	  }
     signed_distance_pseudonormal(O,V,F,tree,FN,VN,EN,EMAP,W,I,C,N);
   stop=time(NULL);
   printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
-  std::string fo="../../Thingi10K/sdf/";
+  std::string fo="../../Thingi10K/sdf_scaled/";
   fo=fo+fl.substr(0,fl.size()-3);
   fo=fo.substr(0,fo.size()-3)+"out";
   FILE *f=fopen(fo.c_str(),"w");
-  fprintf(f,"%d %d %d\n",X,Y,Z);
+  //fprintf(f,"%d %d %d\n",X,Y,Z);
   for (int i=0; i<X*Y*Z; i++)
   	fprintf(f,"%f ",W(i));
   fclose(f);
