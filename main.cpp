@@ -161,7 +161,7 @@ double max_distance = 1;
       	O.row(i*Y*Z+j*Z+k)=min_cord+resolution*Eigen::RowVector3d(i,j,k);
 	  }
     signed_distance_pseudonormal(O,V,F,tree,FN,VN,EN,EMAP,W,I,C,N);
-  std::vector<double> voxel(maxn*maxn*maxn,-1);
+  std::vector<double> voxel(maxn*maxn*maxn,10000);
   std::list<Eigen::RowVector3i> list;
   int i1,j1,z1;
   for (int i=0; i<X; i++){
