@@ -57,23 +57,44 @@ Eigen::MatrixXi trans(6,3);
          0,1,0,
          0,0,-1,
          0,0,1;
-    Eigen::RowVector3i now,now1;
+    Eigen::RowVector3i now,now1,cl;
+    std::list<Eigen::RowVector3i> list1;
+    std::vector<Eigen::RowVector3i> closest(maxn*maxn*maxn);
+    double d;
     printf("%u\n",list.size());
     while (!list.empty()){
     	now=list.front();
     	list.pop_front();
     	for (int i=0; i<6; i++){
     		now1=now+trans.row(i);
-    		if (check(now1,maxn,maxn,maxn)&&voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]==-1){
-    			if (voxel[now(0)*maxn*maxn+now(1)*maxn+now(2)]<0)
-    			  voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=0;
-    			else
-    			  voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=sqrt(voxel[now(0)*maxn*maxn+now(1)*maxn+now(2)]*voxel[now(0)*maxn*maxn+now(1)*maxn+now(2)]+1);
-    			list.push_back(now1);
+    		if (check(now1,maxn,maxn,maxn)&&voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]>1000){
+    			voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=0;
+    			list1.push_back(now1);
+    			closest[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=now1;
+			}
+		}
+	}
+    while (!list1.empty()){
+    	now=list1.front();
+    	cl=closest[now(0)*maxn*maxn+now(1)*maxn+now(2)];
+    	list1.pop_front();
+    	for (int i=0; i<6; i++){
+    		now1=now+trans.row(i);
+    		if (check(now1,maxn,maxn,maxn)){
+    		  d=(now1-cl).squaredNorm();
+    		  d=sqrt(d);
+    		  if (voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]>1000)
+    		    list1.push_back(now1);
+			  if (voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]>d){
+    			voxel[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=d;
+    			closest[now1(0)*maxn*maxn+now1(1)*maxn+now1(2)]=cl;
+    			//list1.push_back(std::pair(now1,now1));
+			  }
 			}
 		}
 	}
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -157,7 +178,7 @@ double max_distance = 1;
   fill(voxel,list);
   stop=time(NULL);
   printf("step2 %f %u\n",(double)difftime(stop,start),X*Y*Z);
-  std::string fo="../../Thingi10K/sdf_new/";
+  std::string fo="../../Thingi10K/sdf_newnew/";
   fo=fo+fl.substr(0,fl.size()-3);
   fo=fo.substr(0,fo.size()-3)+"out";
   FILE *f=fopen(fo.c_str(),"w");
