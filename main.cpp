@@ -110,11 +110,11 @@ int main(int argc, char *argv[])
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=99&&j<1000){
+  	if (j>=1939&&j<2000){
   igl::readSTL(fi,V,F,N);
-  if ((F.rows()<10000)&&!(F.rows()<5000&&V.rows()<10000)){
+  //if ((F.rows()<10000)&&!(F.rows()<5000&&V.rows()<10000)){
 
-  //if ((F.rows()<5000&&V.rows()<10000)){
+  if ((F.rows()<5000&&V.rows()<10000)){
   	
 Eigen::MatrixXi T;
 igl::AABB<Eigen::MatrixXd,3> tree;
