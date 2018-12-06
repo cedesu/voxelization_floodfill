@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
   	fi="../../Thingi10K/raw_meshes/"+fl; 
   	if (j>=6623&&j<7000){
   igl::readSTL(fi,V,F,N);
-  if (F.rows()<5000&&V.rows()<10000){
+  if ((F.rows()<50000)&&!(F.rows()<5000&&V.rows()<10000)){
   	
 Eigen::MatrixXi T;
 igl::AABB<Eigen::MatrixXd,3> tree;
