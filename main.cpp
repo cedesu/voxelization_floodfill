@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
   	printf("%s\n",x);
   	fl=x;
   	fi="../../Thingi10K/raw_meshes/"+fl; 
-  	if (j>=4649&&j<5000){
+  	if (j>=5732&&j<6000){
   igl::readSTL(fi,V,F,N);
   //if ((F.rows()<10000)&&!(F.rows()<5000&&V.rows()<10000)){
 
